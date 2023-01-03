@@ -1,9 +1,10 @@
 package med.voll.api.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,8 +27,8 @@ public class MedicoController {
 	@GetMapping
 	@Transactional
 	@ReadOnlyProperty
-	public List<DadosListagemMedico> listarMedicos() {
-		return medicoService.listarMedicos().stream().map(DadosListagemMedico::new).toList();
+	public Page<DadosListagemMedico> listarMedicos(@PageableDefault(size = 10, page = 0, sort = {"nome"}) Pageable paginacao) {
+		return medicoService.listarMedicos(paginacao).map(DadosListagemMedico::new);
 	}
 	
 	@PostMapping
