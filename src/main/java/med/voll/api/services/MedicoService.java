@@ -1,5 +1,7 @@
 package med.voll.api.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,10 @@ public class MedicoService {
 
 	@Autowired
 	private MedicoRepository medicoRepository;
+	
+	public List<Medico> listarMedicos() {
+		return medicoRepository.findAll();
+	}
 	
 	public void cadastrarMedico(DadosCadastroMedico dados) {
 		Medico medico = new Medico(dados);
