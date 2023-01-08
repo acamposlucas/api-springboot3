@@ -20,17 +20,18 @@ import med.voll.api.services.MedicoService;
 @RestController
 @RequestMapping("/medicos")
 public class MedicoController {
-	
+
 	@Autowired
 	private MedicoService medicoService;
 
 	@GetMapping
 	@Transactional
 	@ReadOnlyProperty
-	public Page<DadosListagemMedico> listarMedicos(@PageableDefault(size = 10, page = 0, sort = {"nome"}) Pageable paginacao) {
+	public Page<DadosListagemMedico> listarMedicos(
+			@PageableDefault(size = 10, page = 0, sort = { "nome" }) Pageable paginacao) {
 		return medicoService.listarMedicos(paginacao).map(DadosListagemMedico::new);
 	}
-	
+
 	@PostMapping
 	@Transactional(rollbackOn = Exception.class)
 	public void cadastrarMedico(@RequestBody @Valid DadosCadastroMedico dados) {
