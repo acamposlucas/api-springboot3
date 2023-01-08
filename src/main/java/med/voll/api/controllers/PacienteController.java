@@ -38,4 +38,5 @@ public class PacienteController {
 			@PageableDefault(size = 10, page = 0, sort = { "nome" }) Pageable paginacao) {
 		return pacienteService.listarPacientes(paginacao).map(DadosListagemPaciente::new);
 	}
+
 }
