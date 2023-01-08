@@ -46,11 +46,21 @@ public class MedicoService {
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	public ResponseEntity<Void> deletarMedico(Long id) {
 		Optional<Medico> optional = medicoRepository.findById(id);
 		if (optional.isPresent()) {
 			medicoRepository.deleteById(id);
+			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	public ResponseEntity<Void> alternarAtivoMedico(Long id) {
+		Optional<Medico> optional = medicoRepository.findById(id);
+		if (optional.isPresent()) {
+			Medico medico = optional.get();
+			medico.setAtivo(!medico.getAtivo());
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();

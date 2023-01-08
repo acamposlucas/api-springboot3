@@ -60,7 +60,13 @@ public class MedicoController {
 
 	@DeleteMapping(value = "/{id}")
 	@Transactional(rollbackOn = Exception.class)
-	public ResponseEntity<Void> deletarMedico (@PathVariable Long id) {
+	public ResponseEntity<Void> deletarMedico(@PathVariable Long id) {
 		return medicoService.deletarMedico(id);
+	}
+
+	@PutMapping(value = "/{id}/ativo")
+	@Transactional(rollbackOn = Exception.class)
+	public ResponseEntity<Void> alternarAtivo(@PathVariable Long id) {
+		return medicoService.alternarAtivoMedico(id);
 	}
 }
