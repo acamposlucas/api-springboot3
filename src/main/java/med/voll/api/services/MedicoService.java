@@ -22,6 +22,10 @@ public class MedicoService {
 	public Page<Medico> listarMedicos(Pageable paginacao) {
 		return medicoRepository.findAll(paginacao);
 	}
+	
+	public Page<Medico> findAllByAtivoTrue(Pageable paginacao) {
+		return medicoRepository.findAllByAtivoTrue(paginacao);
+	}
 
 	public void cadastrarMedico(DadosCadastroMedico dados) {
 		Medico medico = new Medico(dados);

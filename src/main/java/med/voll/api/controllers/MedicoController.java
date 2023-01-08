@@ -50,6 +50,13 @@ public class MedicoController {
 	public ResponseEntity<Medico> listarMedicoPorId(@PathVariable Long id) {
 		return medicoService.listarMedicoPorId(id);
 	}
+	
+	@GetMapping(value = "/ativos")
+	@Transactional
+	@ReadOnlyProperty
+	public Page<Medico> listarMedicosAtivos(@PageableDefault(size = 10, page = 0, sort = { "nome" }) Pageable paginacao) {
+		return medicoService.findAllByAtivoTrue(paginacao);
+	}
 
 	@PutMapping(value = "/{id}")
 	@Transactional(rollbackOn = Exception.class)
