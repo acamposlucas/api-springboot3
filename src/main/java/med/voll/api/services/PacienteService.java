@@ -1,5 +1,7 @@
 package med.voll.api.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,5 +26,13 @@ public class PacienteService {
 	
 	public Page<Paciente> listarPacientes(Pageable paginacao) {
 		return pacienteRepository.findAll(paginacao);
+	}
+	
+	public ResponseEntity<Paciente> listarPacientePorId(Long id) {
+		Optional<Paciente> optional = pacienteRepository.findById(id);
+		if (optional.isPresent()) {
+			return ResponseEntity.ok(optional.get());
+		}
+		return ResponseEntity.notFound().build();
 	}
 }
