@@ -35,4 +35,9 @@ public class PacienteService {
 		}
 		return ResponseEntity.notFound().build();
 	}
+
+	public ResponseEntity<Void> deletarPacientePorId(Long id) {
+		pacienteRepository.deleteById(id);
+		return ResponseEntity.noContent().build();
+	}
 }
