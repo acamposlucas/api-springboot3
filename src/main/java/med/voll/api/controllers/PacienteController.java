@@ -52,6 +52,7 @@ public class PacienteController {
 	@DeleteMapping(value = "/{id}")
 	@Transactional(rollbackOn = Exception.class)
 	public ResponseEntity<Void> deletarPacientePorId(@PathVariable Long id) {
-		return pacienteService.deletarPacientePorId(id);
+		pacienteService.deletarPacientePorId(id);
+		return ResponseEntity.noContent().build();
 	}
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -33,47 +34,59 @@ public class MedicoController {
 	@GetMapping
 	@Transactional
 	@ReadOnlyProperty
-	public Page<DadosListagemMedico> listarMedicos(
+	public ResponseEntity<Page<DadosListagemMedico>> listarMedicos(
 			@PageableDefault(size = 10, page = 0, sort = { "nome" }) Pageable paginacao) {
-		return medicoService.listarMedicos(paginacao).map(DadosListagemMedico::new);
+		var page = medicoService.listarMedicos(paginacao).map(DadosListagemMedico::new);
+		return ResponseEntity.ok(page);
 	}
 
 	@PostMapping
 	@Transactional(rollbackOn = Exception.class)
-	public void cadastrarMedico(@RequestBody @Valid DadosCadastroMedico dados) {
-		medicoService.cadastrarMedico(dados);
+	public ResponseEntity<DadosListagemMedico> cadastrarMedico(@RequestBody @Valid DadosCadastroMedico dados,
+			UriComponentsBuilder uriBuilder) {
+		var medico = new Medico(dados);
+		medicoService.cadastrarMedico(medico);
+		var uri = uriBuilder.path("/medicos/{id}").buildAndExpand(medico.getId()).toUri();
+		return ResponseEntity.created(uri).body(new DadosListagemMedico(medico));
 	}
 
 	@GetMapping(value = "/{id}")
 	@Transactional
 	@ReadOnlyProperty
 	public ResponseEntity<Medico> listarMedicoPorId(@PathVariable Long id) {
-		return medicoService.listarMedicoPorId(id);
+		var medico = medicoService.listarMedicoPorId(id);
+		return ResponseEntity.ok(medico);
 	}
-	
+
 	@GetMapping(value = "/ativos")
 	@Transactional
 	@ReadOnlyProperty
-	public Page<Medico> listarMedicosAtivos(@PageableDefault(size = 10, page = 0, sort = { "nome" }) Pageable paginacao) {
-		return medicoService.findAllByAtivoTrue(paginacao);
+	public ResponseEntity<Page<Medico>> listarMedicosAtivos(
+			@PageableDefault(size = 10, page = 0, sort = { "nome" }) Pageable paginacao) {
+		var page = medicoService.findAllByAtivoTrue(paginacao);
+		return ResponseEntity.ok(page);
 	}
 
 	@PutMapping(value = "/{id}")
 	@Transactional(rollbackOn = Exception.class)
-	public ResponseEntity<Void> atualizarMedico(@PathVariable Long id,
+	public ResponseEntity<DadosListagemMedico> atualizarMedico(@PathVariable Long id,
 			@RequestBody @Valid DadosMedicoAtualizado dados) {
-		return medicoService.atualizarMedico(id, dados);
+		var medico = medicoService.atualizarMedico(id, dados);
+		var medicoAtualizado = new DadosListagemMedico(medico);
+		return ResponseEntity.ok(medicoAtualizado);
 	}
 
 	@DeleteMapping(value = "/{id}")
 	@Transactional(rollbackOn = Exception.class)
 	public ResponseEntity<Void> deletarMedico(@PathVariable Long id) {
-		return medicoService.deletarMedico(id);
+		medicoService.deletarMedico(id);
+		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping(value = "/{id}/ativo")
 	@Transactional(rollbackOn = Exception.class)
 	public ResponseEntity<Void> alternarAtivo(@PathVariable Long id) {
-		return medicoService.alternarAtivoMedico(id);
+		medicoService.alternarAtivoMedico(id);
+		return ResponseEntity.noContent().build();
 	}
 }

@@ -5,10 +5,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import med.voll.api.medico.DadosCadastroMedico;
 import med.voll.api.medico.DadosMedicoAtualizado;
 import med.voll.api.medico.Medico;
 import med.voll.api.repositories.MedicoRepository;
@@ -22,51 +20,46 @@ public class MedicoService {
 	public Page<Medico> listarMedicos(Pageable paginacao) {
 		return medicoRepository.findAll(paginacao);
 	}
-	
+
 	public Page<Medico> findAllByAtivoTrue(Pageable paginacao) {
 		return medicoRepository.findAllByAtivoTrue(paginacao);
 	}
 
-	public void cadastrarMedico(DadosCadastroMedico dados) {
-		Medico medico = new Medico(dados);
+	public void cadastrarMedico(Medico medico) {
 		medicoRepository.save(medico);
 	}
 
-	public ResponseEntity<Medico> listarMedicoPorId(Long id) {
+	public Medico listarMedicoPorId(Long id) {
 		Optional<Medico> optional = medicoRepository.findById(id);
 		if (optional.isPresent()) {
 			Medico medico = optional.get();
-			return ResponseEntity.ok().body(medico);
+			return medico;
 		}
-		return ResponseEntity.notFound().build();
+		return null;
 	}
 
-	public ResponseEntity<Void> atualizarMedico(Long id, DadosMedicoAtualizado dados) {
+	public Medico atualizarMedico(Long id, DadosMedicoAtualizado dados) {
 		Optional<Medico> optional = medicoRepository.findById(id);
 		if (optional.isPresent()) {
 			Medico medico = optional.get();
 			medico.atualizarMedico(dados);
-			return ResponseEntity.noContent().build();
+			return medico;
 		}
-		return ResponseEntity.notFound().build();
+		return null;
 	}
 
-	public ResponseEntity<Void> deletarMedico(Long id) {
+	public void deletarMedico(Long id) {
 		Optional<Medico> optional = medicoRepository.findById(id);
 		if (optional.isPresent()) {
 			medicoRepository.deleteById(id);
-			return ResponseEntity.ok().build();
 		}
-		return ResponseEntity.notFound().build();
 	}
 
-	public ResponseEntity<Void> alternarAtivoMedico(Long id) {
+	public void alternarAtivoMedico(Long id) {
 		Optional<Medico> optional = medicoRepository.findById(id);
 		if (optional.isPresent()) {
 			Medico medico = optional.get();
 			medico.setAtivo(!medico.getAtivo());
-			return ResponseEntity.ok().build();
 		}
-		return ResponseEntity.notFound().build();
 	}
 }
