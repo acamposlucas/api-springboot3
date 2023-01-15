@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -30,23 +31,29 @@ public class PacienteController {
 
 	@PostMapping
 	@Transactional(rollbackOn = Exception.class)
-	public ResponseEntity<Void> cadastrarPaciente(@RequestBody @Valid DadosCadastroPaciente dados) {
-		return pacienteService.cadastrarPaciente(dados);
+	public ResponseEntity<DadosListagemPaciente> cadastrarPaciente(@RequestBody @Valid DadosCadastroPaciente dados,
+			UriComponentsBuilder uriBuilder) {
+		var paciente = new Paciente(dados);
+		pacienteService.cadastrarPaciente(paciente);
+		var uri = uriBuilder.path("/medicos/{id}").buildAndExpand(paciente.getId()).toUri();
+		return ResponseEntity.created(uri).body(new DadosListagemPaciente(paciente));
 	}
 
 	@GetMapping
 	@Transactional
 	@ReadOnlyProperty
-	public Page<DadosListagemPaciente> listarPacientes(
+	public ResponseEntity<Page<DadosListagemPaciente>> listarPacientes(
 			@PageableDefault(size = 10, page = 0, sort = { "nome" }) Pageable paginacao) {
-		return pacienteService.listarPacientes(paginacao).map(DadosListagemPaciente::new);
+		var page = pacienteService.listarPacientes(paginacao).map(DadosListagemPaciente::new);
+		return ResponseEntity.ok(page);
 	}
 
 	@GetMapping(value = "/{id}")
 	@Transactional
 	@ReadOnlyProperty
-	public ResponseEntity<Paciente> listarPacientePorId(@PathVariable Long id) {
-		return pacienteService.listarPacientePorId(id);
+	public ResponseEntity<DadosListagemPaciente> listarPacientePorId(@PathVariable Long id) {
+		var paciente = pacienteService.listarPacientePorId(id);
+		return ResponseEntity.ok(new DadosListagemPaciente(paciente));
 	}
 
 	@DeleteMapping(value = "/{id}")
